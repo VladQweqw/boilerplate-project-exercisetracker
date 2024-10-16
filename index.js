@@ -48,6 +48,17 @@ app.post('/api/users', function(req, res) {
     })
 })
 
+app.get('/api/users', function(req, res) {
+  User.find().then((response) => {
+    res.json(response)
+  })
+  .catch((err) => {
+    res.json({
+      error: err
+    })
+  })
+})
+
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
 })
