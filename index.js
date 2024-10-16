@@ -30,7 +30,7 @@ app.post('/api/users', function(req, res) {
       username,
     })
     .then((response) => {
-      res.json({
+      return res.json({
         username: username,
         _id: response._id
       })
@@ -50,11 +50,58 @@ app.post('/api/users', function(req, res) {
 
 app.get('/api/users', function(req, res) {
   User.find().then((response) => {
+    return res.json(response)
+  })
+  .catch((err) => {
+    return res.json({
+      error: err
+    })
+  })
+})
+
+app.post('/api/users/:_id/exercises', function(req, res) {
+  const user_id = req.body[':_id'];
+  const description = req.body.description;
+  const duration = Number(req.body.duration);
+  const date = req.body.data || new Date().toDateString();
+
+  console.log(req.body);
+  if(!user_id || !description || !duration) {
+    return res.json({
+      error: "Invalid input data"
+    })
+  }
+
+  Exercise.create({
+    username: user_id,
+    description: description,
+    duration: duration,
+    date: date
+  })
+  .then((response) => {
+    return res.json(response)
+  })
+  .catch((err) => {
+    return res.json({
+      error: "Unexptected error"
+    })
+  })
+
+})
+
+app.get('/api/users/:_id/logs', function(req, res) {
+  const user_id = req.params._id;
+  
+  Exercise.find({username: user_id})
+  .then((response) => {
+    response.count = response.length
+    console.log(response);
+    
     res.json(response)
   })
   .catch((err) => {
-    res.json({
-      error: err
+    return res.json({
+      error: "Invalid user ID"
     })
   })
 })
