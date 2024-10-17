@@ -97,17 +97,18 @@ app.get('/api/users/:_id/logs', async function(req, res) {
 
     Exercise.find({username: user_id})
     .then((response) => {    
-      console.log({
-        username: user.username,
-        _id: user._id,
-        log: response,
-        count: response.length
-      });
+      const logs = response.map((resp) => {
+        return {
+          description: resp.description,
+          date: resp.date,
+          duration: resp.duration
+        }
+      })
       
       res.json({
         username: user.username,
         _id: user._id,
-        log: response,
+        log: logs,
         count: response.length
       })
     })
