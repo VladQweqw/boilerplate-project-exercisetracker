@@ -89,21 +89,39 @@ app.post('/api/users/:_id/exercises', function(req, res) {
 
 })
 
-app.get('/api/users/:_id/logs', function(req, res) {
+app.get('/api/users/:_id/logs', async function(req, res) {
   const user_id = req.params._id;
   
-  Exercise.find({username: user_id})
-  .then((response) => {
-    response.count = response.length
-    console.log(response);
-    
-    res.json(response)
+  try {
+    const user = await User.findById(user_id);
+
+    Exercise.find({username: user_id})
+    .then((response) => {    
+      console.log({
+        username: user.username,
+        _id: user._id,
+        log: response,
+        count: response.length
+      });
+      
+      res.json({
+        username: user.username,
+        _id: user._id,
+        log: response,
+        count: response.length
+      })
+    })
+    .catch((err) => {
+      return res.json({
+        error: "Invalid user ID"
+      })
   })
-  .catch((err) => {
-    return res.json({
+  }
+  catch(err) {
+    res.json({
       error: "Invalid user ID"
     })
-  })
+  }
 })
 
 const listener = app.listen(process.env.PORT || 3000, () => {
