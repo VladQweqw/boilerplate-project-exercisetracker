@@ -59,7 +59,7 @@ app.get('/api/users', function(req, res) {
   })
 })
 
-app.post('/api/users/:_id/exercises', function(req, res) {
+app.post('/api/users/:_id/exercises', async function(req, res) {
   const user_id = req.body[':_id'];
   const description = req.body.description;
   const duration = Number(req.body.duration);
@@ -72,21 +72,38 @@ app.post('/api/users/:_id/exercises', function(req, res) {
     })
   }
 
-  Exercise.create({
-    username: user_id,
-    description: description,
-    duration: duration,
-    date: date
-  })
-  .then((response) => {
-    return res.json(response)
-  })
-  .catch((err) => {
-    return res.json({
-      error: "Unexptected error"
+  try {
+    const user = await User.findById(user_id);
+    console.log(user);
+    
+    Exercise.create({
+      username: user_id,
+      description: description,
+      duration: duration,
+      date: date
     })
-  })
+    .then((response) => {
 
+      return res.json({
+        username: user.username,
+        _id: user._id,
+        description: response.description,
+        duration: response.duration,
+        date: response.date
+      })
+    })
+    .catch((err) => {
+      return res.json({
+        error: "Unexptected error"
+      })
+    })
+
+  }
+  catch(err) {
+    return res.json({
+      error: "Invalid user ID"
+    })
+  }
 })
 
 app.get('/api/users/:_id/logs', async function(req, res) {
