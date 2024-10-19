@@ -63,7 +63,11 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
   const user_id = req.body[':_id'];
   const description = req.body.description;
   const duration = Number(req.body.duration);
-  const date = req.body.data || new Date().toDateString();
+  let date = new Date(req.body.date).toDateString()
+  
+  if(new Date(req.body.date).toDateString() === "Invalid Date") {
+    date = new Date().toDateString();
+  }
 
   console.log(req.body);
   if(!user_id || !description || !duration) {
@@ -74,22 +78,21 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
 
   try {
     const user = await User.findById(user_id);
-    console.log(user);
     
     Exercise.create({
       username: user_id,
       description: description,
       duration: duration,
-      date: date
+      date: new Date(date).toDateString()
     })
     .then((response) => {
 
       return res.json({
-        username: user.username,
         _id: user._id,
+        username: user.username,
         description: response.description,
         duration: response.duration,
-        date: response.date
+        date: new Date(response.date).toDateString()
       })
     })
     .catch((err) => {
