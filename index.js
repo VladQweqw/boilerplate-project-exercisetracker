@@ -90,9 +90,9 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
       return res.json({
         _id: user._id,
         username: user.username,
-        description: response.description,
+        date: new Date(response.date).toDateString(),
         duration: response.duration,
-        date: new Date(response.date).toDateString()
+        description: response.description,
       })
     })
     .catch((err) => {
