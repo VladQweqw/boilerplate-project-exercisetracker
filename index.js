@@ -120,10 +120,10 @@ app.get('/api/users/:_id/logs', async function(req, res) {
     .then((response) => {    
       
       res.json({
+        _id: user._id,
         username: user.username,
         count: response.length,
-        _id: user._id,
-        logs: [...response],
+        log: [...response],
       })
     })
     .catch((err) => {
