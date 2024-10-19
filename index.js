@@ -113,19 +113,12 @@ app.get('/api/users/:_id/logs', async function(req, res) {
     const user = await User.findById(user_id);
 
     Exercise.find({username: user_id})
+    .select('duration date description')
     .then((response) => {    
-      const logs = response.map((resp) => {
-        return {
-          description: resp.description,
-          date: resp.date,
-          duration: resp.duration
-        }
-      })
       
       res.json({
-        username: user.username,
-        _id: user._id,
-        log: logs,
+        user: user,
+        log: [...response],
         count: response.length
       })
     })
